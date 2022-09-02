@@ -3,6 +3,7 @@
 
 # preliminaries -----------------------------------------------------------
 library(here)
+library(deSolve)
 
 # set model parameters ----------------------------------------------------------
 
@@ -20,6 +21,7 @@ l=alpha*phi/(rho+phi-mu)
 # set parameters of the solution algorithm -----------------------
 
 xstar_guess=0.1
+xbig=2
 
 
 # compute value function below threshold using analytical solution --------
@@ -46,4 +48,24 @@ if(xstar>1){
 }
 
 
+# solve for value function at large x numerically -------------------------
 
+parameters <- c(mu=mu,
+                delta=delta,
+                sigma=sigma,
+                phi=phi,
+                rho=rho)
+state<- c(W=1/rbar,
+          Z=FirstDerWxstar)
+derivatives <- function(x,state,parameters){
+  with(as.list(c(state,parameters)), {
+    dW<-Z
+    dZ<- -2*(mu+delta)/sigma^2*Z/x+2*delta/sigma^2*Z/(x*W)-2*phi/sigma^2*min(1,x)/x^2+2*(rho+phi+delta)/sigma^2*W/x^2-2*delta/sigma^2*1/x^2
+    list(c(dW,dZ))
+  })
+}
+
+
+ode(y=state, times=c(xstar,xbig), func=derivatives, parms=parameters)
+
+#compare compute W at xbig with analytical limit
