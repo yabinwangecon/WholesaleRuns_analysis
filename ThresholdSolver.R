@@ -19,7 +19,7 @@ l=alpha*phi/(rho+phi-mu)
 
 # set parameters of the solution algorithm -----------------------
 
-xstar_guess=1/92
+xstar_guess=0.1
 
 
 # compute value function below threshold using analytical solution --------
@@ -38,7 +38,11 @@ if(xstar<=1){
   SecondDerWxstar=A1*eta*(eta-1)*xstar^(eta-2)
 }
 if(xstar>1){
-  
+  B2=phi/(gamma+eta)*((1-eta)/(a3+a1)+eta/a3)
+  A2=(1/rbar+a5/a3)*xstar^(-eta)+a4/(a3+a1)*xstar^(1-eta)-B2*xstar^(-gamma-eta)
+  B1=A2+phi/(gamma+eta)*(gamma/a3-(gamma+1)/(a3+a1))
+  FirstDerWxstar=B1*eta*xstar^(eta-1)+B2*(-gamma)*xstar^(-gamma-1)-a4/(a3+a1)
+  SecondDerWxstar=B1*eta*(eta-1)*xstar^(eta-2)+B2*(-gamma)*(-gamma-1)*xstar^(-gamma-2)
 }
 
 
