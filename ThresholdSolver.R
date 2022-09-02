@@ -4,7 +4,7 @@
 # preliminaries -----------------------------------------------------------
 library(here)
 
-# set parameters ----------------------------------------------------------
+# set model parameters ----------------------------------------------------------
 
 rho=0.049
 delta=1/0.101
@@ -16,4 +16,28 @@ rbar=0.00598
 alpha=0.92
 xstar_predicted=1/92
 l=alpha*phi/(rho+phi-mu)
-xstar_guess=
+
+# set parameters of the solution algorithm -----------------------
+
+xstar_guess=1/92
+
+
+# compute value function below threshold using analytical solution --------
+# note: using only expressions needed to evaluate function at threshold
+xstar=xstar_guess
+a1=mu+delta-delta*rbar
+a2=sigma^2/2
+a3=-(phi+rho+theta*delta+delta)
+a4=theta*delta*l+phi*(xstar<=1)
+a5=delta+phi*(xstar>=1)
+eta=1/(2*a2)*(a2-a1+sqrt((a2-a1)^2-4*a3*a2))
+gamma=-1/(2*a2)*(a2-a1-sqrt((a2-a1)^2-4*a3*a2))
+if(xstar<=1){
+  A1=(1/rbar+a5/a3)*xstar^(-eta)+a4/(a3+a1)*xstar^(1-eta)
+  FirstDerWxstar=A1*eta*xstar^(eta-1)-a4/(a3+a1)
+  SecondDerWxstar=A1*eta*(eta-1)*xstar^(eta-2)
+}
+
+
+
+
