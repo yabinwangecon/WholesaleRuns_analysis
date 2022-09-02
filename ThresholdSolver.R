@@ -37,7 +37,9 @@ if(xstar<=1){
   FirstDerWxstar=A1*eta*xstar^(eta-1)-a4/(a3+a1)
   SecondDerWxstar=A1*eta*(eta-1)*xstar^(eta-2)
 }
-
+if(xstar>1){
+  
+}
 
 
 
