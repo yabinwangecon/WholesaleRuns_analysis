@@ -2,7 +2,6 @@
 
 
 # preliminaries -----------------------------------------------------------
-library(here)
 library(deSolve)
 
 # set model parameters ----------------------------------------------------------
@@ -14,16 +13,16 @@ mu=0.049
 theta=0.449
 sigma=0.043
 rbar=0.00598
-Rbar=(rbar+rho)/(phi+delta)+1
+Rbar=(rbar+rho)/(phi+delta)+1 #or rbar+rho+1 ?
 alpha=0.92
 xstar_predicted=1/92
 l=alpha*phi/(rho+phi-mu)
-Wlimit=(phi+theta)/(phi+theta+rho)
+Wlimit=(phi+delta)/(phi+delta+rho)
   
 
 # set parameters of the solution algorithm -----------------------
 
-xstar_guess=0.0108
+xstar_guess=0.01
 xbig=2
 
 
