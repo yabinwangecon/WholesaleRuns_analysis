@@ -1,8 +1,12 @@
 ### SOLVING FOR RUN THRESHOLD ###
 
+# a problem in the parameters values?
+# W at xstar seems too close to Wlimit: issue with Rbar ?
 
 # preliminaries -----------------------------------------------------------
 library(deSolve)
+library(ggplot2)
+
 
 # set model parameters ----------------------------------------------------------
 
@@ -13,7 +17,7 @@ mu=0.049
 theta=0.449
 sigma=0.043
 rbar=0.00598
-Rbar=(rbar+rho)/(phi+delta)+1 #or rbar+rho+1 ?
+Rbar=(rbar+rho)/(phi+delta)+1
 alpha=0.92
 xstar_predicted=1/92
 l=alpha*phi/(rho+phi-mu)
@@ -22,8 +26,8 @@ Wlimit=(phi+delta)/(phi+delta+rho)
 
 # set parameters of the solution algorithm -----------------------
 
-xstar_guess=0.01
-xbig=2
+xstar_guess=0.1
+xbig=20
 
 
 # compute value function below threshold using analytical solution --------
@@ -50,7 +54,7 @@ if(xstar>1){
 }
 
 
-# solve for value function at large x numerically -------------------------
+# compute value function at large x numerically -------------------------
 
 parameters <- c(mu=mu,
                 delta=delta,
@@ -62,13 +66,17 @@ state<- c(W=1/Rbar,
 derivatives <- function(x,state,parameters){
   with(as.list(c(state,parameters)), {
     dW<-Z
-    dZ<- -2*(mu+delta)/sigma^2*Z/x+2*delta/sigma^2*Z/(x*W)-2*phi/sigma^2*min(1,x)/x^2+2*(rho+phi+delta)/sigma^2*W/x^2-2*delta/sigma^2*1/x^2
+    dZ<- -(2*(mu+delta)*Z)/(sigma^2*x)+(2*delta*Z)/(sigma^2*x*W)-(2*phi*min(1,x))/(sigma^2*x^2)+(2*(rho+phi+delta)*W)/(sigma^2*x^2)-(2*delta)/(sigma^2*x^2)
     list(c(dW,dZ))
   })
 }
 
-
-results<-ode(y=state, times=c(xstar,xbig), func=derivatives, parms=parameters)
-Wbig<-results[2,2]
-
+points=seq(xstar, xbig, by=0.001 )
+#points=c(xstar,xbig)
+results<-ode(y=state, times=points, func=derivatives, parms=parameters)
+#diagnostics(results)
+#Wbig<-results[2,2]
+results<-data.frame(results)
+ggplot(results, aes(x=time, y=W)) +
+  geom_line()
 #compare compute W at xbig with analytical limit
