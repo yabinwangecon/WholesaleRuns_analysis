@@ -19,14 +19,14 @@ sigma=0.043
 rbar=0.00598
 Rbar=(rbar+rho)/(phi+delta)+1
 alpha=0.92
-xstar_predicted=1/92
+xstar_predicted=1/0.92
 l=alpha*phi/(rho+phi-mu)
 Wlimit=(phi+delta)/(phi+delta+rho)
   
 
 # set parameters of the solution algorithm -----------------------
 
-xstar_guess=0.1
+xstar_guess=1/0.92#0.0109
 xbig=20
 
 
@@ -55,7 +55,11 @@ if(xstar>1){
 
 
 # compute value function at large x numerically -------------------------
-
+# rho=0.05#0.05
+# delta=10#10
+# phi=0.2#0.2
+# mu=rho#0.05
+# sigma=0.05#0.05
 parameters <- c(mu=mu,
                 delta=delta,
                 sigma=sigma,
@@ -63,16 +67,22 @@ parameters <- c(mu=mu,
                 rho=rho)
 state<- c(W=1/Rbar,
           Z=FirstDerWxstar)
+
+ state<- c(W=1/Rbar,
+           Z=0.05539840207) #seems we can search for Z that makes W converge. but this Z is very different from the W' obtained with closed form solution. mistake in parameters/formulas?
 derivatives <- function(x,state,parameters){
   with(as.list(c(state,parameters)), {
-    dW<-Z
-    dZ<- -(2*(mu+delta)*Z)/(sigma^2*x)+(2*delta*Z)/(sigma^2*x*W)-(2*phi*min(1,x))/(sigma^2*x^2)+(2*(rho+phi+delta)*W)/(sigma^2*x^2)-(2*delta)/(sigma^2*x^2)
+    dW<- Z
+    dZ<- (-(2*(mu+delta)*Z)/(sigma^2*x)+(2*delta*Z)/(sigma^2*x*W)-(2*phi*min(1,x))/(sigma^2*x^2)+(2*(rho+phi+delta)*W)/(sigma^2*x^2)-(2*delta)/(sigma^2*x^2))
     list(c(dW,dZ))
   })
 }
 
+xbig=xstar
 points=seq(xstar, xbig, by=0.001 )
-#points=c(xstar,xbig)
+points=seq(xbig,xbig+0.8, by=0.001 )
+points=seq(xbig,xbig*1.2, by=xbig*0.0001 )
+
 results<-ode(y=state, times=points, func=derivatives, parms=parameters)
 #diagnostics(results)
 #Wbig<-results[2,2]
